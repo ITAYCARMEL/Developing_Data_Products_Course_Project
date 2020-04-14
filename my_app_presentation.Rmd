@@ -1,0 +1,88 @@
+---
+title: "Covid19 Spread Exploration MiniTool"
+author: "Itay Carmel"
+date: "4/14/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+---
+## Getting up {data-background=foo.png data-background-size=cover}
+---
+## Covid19 spread rate apliccation
+
+
+
+This is an Introduction (Executive Summary) to my final project in **Developing Data Products** course.
+
+We all experience strange time these days while the Covid19 epidemic continue to hit and kill Thousands of victims every day.
+
+The Data Sience world harrnesses all the knowledge and practical tools it has to help in the shared effort of fighting the virus.
+
+With **Covid19 spreading rate comparison application** we hope to make our modest contribution to that effort by enabling a clear and easy way to compare the virus spreading rate between countries all over the world.
+
+## What it does:
+
+The application presents a graph of confirmed cases within the selected countries (one or many) for certain date range, define by the user.
+
+![The home page of the application](pic4.png)
+
+## The Data Source(part 1):
+
+The dataset Behind the Scenes comes from "Our World In Data" [Website](https://ourworldindata.org/coronavirus-source-data).
+
+The original data format is a bit messy and there are some cleaning and redesigning work needed to be done.
+
+Here is the original:
+```{r,echo=FALSE,warning=FALSE}
+
+library(tidyr)
+
+# download the dataset file
+
+  url<-"https://covid.ourworldindata.org/data/ecdc/total_cases.csv"
+
+  dest<-"../Covid19_spread_rate/total_cases.csv"
+
+  download.file(url,dest)
+
+  
+# read in the file
+  
+  mydata<-read.csv("total_cases.csv",stringsAsFactors=FALSE)
+data_dim<-dim(mydata)
+  head(mydata,5)
+```
+
+## The Data Source (part 2):
+
+As we can see in this dataset, the variables(columns) are the countries and the date while the observations(rows) are the sum of cases per day.
+
+In order to enable more conviniet structure we had to transform the shape of the dataset: 
+```{r,echo=FALSE}
+
+# prepare the data: 
+    cnms<-colnames(mydata)
+    cnms<-cnms[2:208]
+  
+#reshape the data
+    mydata<-gather(mydata,cnms,key="Country",value="Cases")
+  
+# Remove unnecessary dots in the country names:
+    mydata$Country<-gsub("\\."," ",mydata$Country)
+
+# remove the NA
+    mydata$Cases[is.na(mydata$Cases)]<-0
+
+# convert the date variable from factor to Date
+    mydata$date<-as.Date(mydata$date)
+    head(mydata)
+  
+```
+ 
+ This format make it easy for the application to plot the comparison graph.
+ 
+
